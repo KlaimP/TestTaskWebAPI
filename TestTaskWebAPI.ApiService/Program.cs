@@ -1,4 +1,6 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using DBApi.Repository;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,8 +10,23 @@ builder.AddServiceDefaults();
 // Add services to the container.
 builder.Services.AddProblemDetails();
 
+builder.Services.AddScoped<IRepository, PostgresDBRepository>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
+
+builder.Services.AddDbContext<PostgresDBRepository>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -26,12 +43,20 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();              
-    app.UseSwaggerUI(c =>
+    app.UseSwaggerUI(options =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "TestTaskWebApi API v1");
-        c.RoutePrefix = string.Empty; 
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "TestTaskWebApi API v1");
+        options.RoutePrefix = string.Empty; 
     });
 }
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<PostgresDBRepository>();
+    db.Database.EnsureCreated();
+}
+
+app.UseCors("AllowAll");
 
 app.UseExceptionHandler();
 

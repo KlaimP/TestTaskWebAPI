@@ -1,4 +1,5 @@
 ﻿using DBApi.Models;
+using System.Collections.ObjectModel;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,18 @@ namespace DBApi.Repository
     {            
         public PostgresDBRepository(DbContextOptions<PostgresDBRepository> options) : base(options) { }
 
-        public DbSet<Values> Values { get; set; }
-        public DbSet<Results> Results { get; set; }
+        public DbSet<Values> values { get; set; }
+        public DbSet<Results> results { get; set; }
+        public ObservableCollection<Values> GetValues()
+        {
+            return new ObservableCollection<Values>(values.OrderBy(p => p.Id));
+        }
+        public bool AddValues(Values _values)
+        {
+            _values.Id = values.OrderBy(p => p.Id).LastOrDefault()?.Id + 1 ?? 1;
+            values.Add(_values);
+            this.SaveChanges();
+            return true;
+        }
     }
 }

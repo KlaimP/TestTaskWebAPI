@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DBApi.Repository;
+using Microsoft.AspNetCore.Mvc;
 
 namespace TestTaskWebAPI.ApiService.Controllers
 {
@@ -6,12 +7,19 @@ namespace TestTaskWebAPI.ApiService.Controllers
     [Route("api/[controller]")]
     public class testController : Controller
     {
+        private readonly IRepository _repository;
+
+        public testController(IRepository repository)
+        {
+            _repository = repository;
+        }
+
         [HttpGet]
         public IActionResult Index()
         {
             return Ok(new
             {
-                message = "Всё работает!",
+                message = _repository.GetValues(),
                 timestamp = DateTime.UtcNow
             }); 
         }
