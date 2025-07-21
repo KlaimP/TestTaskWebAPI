@@ -56,6 +56,8 @@ using (var scope = app.Services.CreateScope())
     db.Database.EnsureCreated();
 }
 
+app.UseDeveloperExceptionPage();
+
 app.UseCors("AllowAll");
 
 app.UseExceptionHandler();

@@ -6,7 +6,7 @@ namespace TestTaskWebAPI.ApiService.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class addValuesController : ControllerBase // <--- должен быть ControllerBase для API
+    public class addValuesController : ControllerBase
     {
         private readonly PostgresDBRepository _db;
 
@@ -23,7 +23,7 @@ namespace TestTaskWebAPI.ApiService.Controllers
 
             try
             {
-                var result = _db.AddValues(value);
+                var result = _db.AddValue(value);
                 return Ok(new { success = result });
             }
             catch (Exception ex)
