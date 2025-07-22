@@ -8,5 +8,6 @@ namespace DBApi.Repository
         ObservableCollection<Values> GetValues();
         bool AddValue(Values _value); 
         bool AddValues(List<CsvValues> _values);
+        bool CalculateResults(List<CsvValues> _values, string filename);
     }
 }

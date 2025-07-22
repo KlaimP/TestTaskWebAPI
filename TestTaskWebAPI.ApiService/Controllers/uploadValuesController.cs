@@ -71,9 +71,18 @@ namespace TestTaskWebAPI.ApiService.Controllers
                 }
             }
 
-            _db.AddValues(records);
-
-            return Ok(new { count = records.Count, message = records });
+            if (_db.AddValues(records))
+            {
+                if (_db.CalculateResults(records, file.FileName))
+                {
+                    return Ok(new { count = records.Count, message = records });
+                }
+                else
+                {
+                    return BadRequest("Couldn't calculate the results");
+                }
+            }
+            return BadRequest("Couldn't add values");
         }
     }
 }
