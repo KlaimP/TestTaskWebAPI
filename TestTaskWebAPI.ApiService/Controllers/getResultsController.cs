@@ -9,9 +9,9 @@ namespace TestTaskWebAPI.ApiService.Controllers
     [Route("api/[controller]")]
     public class getResultsController : Controller
     {
-        private readonly PostgresDBRepository _db;
+        private readonly IRepository _db;
 
-        public getResultsController(PostgresDBRepository db)
+        public getResultsController(IRepository db)
         {
             _db = db;
         }
@@ -25,17 +25,14 @@ namespace TestTaskWebAPI.ApiService.Controllers
             [FromQuery] double? minAvgExecutionTime,
             [FromQuery] double? maxAvgExecutionTime)
         {
-            var result = await Task.Run(() =>
-                 _db.getResults(
+            var result = await _db.getResults(
                      fileName,
                      minDate,
                      maxDate,
                      minAvgValue,
                      maxAvgValue,
                      minAvgExecutionTime,
-                     maxAvgExecutionTime
-                 )
-             );
+                     maxAvgExecutionTime);
             return Ok(result);
         }
     }

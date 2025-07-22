@@ -4,13 +4,13 @@ using DBApi.Repository;
 
 namespace TestTaskWebAPI.ApiService.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
+    //[ApiController]
+    //[Route("api/[controller]")]
     public class addValuesController : ControllerBase
     {
-        private readonly PostgresDBRepository _db;
+        private readonly IRepository _db;
 
-        public addValuesController(PostgresDBRepository db)
+        public addValuesController(IRepository db)
         {
             _db = db;
         }

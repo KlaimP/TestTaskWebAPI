@@ -20,9 +20,7 @@ namespace DBApi.Repository
         public DbSet<Results> results { get; set; }
         public async Task<List<Values>> GetValues(string fileName)
         {
-            List<Values> value = new List<Values>(values.Where(r => r.FileName == fileName).OrderByDescending(r => r.Date).Take(10));
-
-            return value;
+            return await values.Where(r => r.FileName == fileName).OrderByDescending(r => r.Date).Take(10).ToListAsync();
         }
         public async Task<bool> AddValue(Values _value)
         {
@@ -77,39 +75,32 @@ namespace DBApi.Repository
             }
         }
 
-        public async Task<List<Results>> getResults(
-        [FromQuery] string? fileName,
-        [FromQuery] DateTime? minDate,
-        [FromQuery] DateTime? maxDate,
-        [FromQuery] double? minAvgValue,
-        [FromQuery] double? maxAvgValue,
-        [FromQuery] double? minAvgExecutionTime,
-        [FromQuery] double? maxAvgExecutionTime)
+        public async Task<List<Results>> getResults(string? fileName, DateTime? minDate, DateTime? maxDate, double? minAvgValue, double? maxAvgValue, double? minAvgExecutionTime, double? maxAvgExecutionTime)
         {
-            List<Results> query = new List<Results>(results);
+            IQueryable<Results> query = results.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(fileName))
-                query = new List<Results>(query.Where(r => r.FileName == fileName));
+                query = query.Where(r => r.FileName == fileName);
 
             if (minDate.HasValue)
-                query = new List<Results>(query.Where(r => r.MinDate >= minDate.Value.ToUniversalTime()));
+                query = query.Where(r => r.MinDate >= minDate.Value.ToUniversalTime());
 
             if (maxDate.HasValue)
-                query = new List<Results>(query.Where(r => r.MinDate <= maxDate.Value.ToUniversalTime()));
+                query = query.Where(r => r.MinDate <= maxDate.Value.ToUniversalTime());
 
             if (minAvgValue.HasValue)
-                query = new List<Results>(query.Where(r => r.AvgValue >= minAvgValue.Value));
+                query = query.Where(r => r.AvgValue >= minAvgValue.Value);
 
             if (maxAvgValue.HasValue)
-                query = new List<Results>(query.Where(r => r.AvgValue <= maxAvgValue.Value));
+                query = query.Where(r => r.AvgValue <= maxAvgValue.Value);
 
             if (minAvgExecutionTime.HasValue)
-                query = new List<Results>(query.Where(r => r.AvgExecutionTime >= minAvgExecutionTime.Value));
+                query = query.Where(r => r.AvgExecutionTime >= minAvgExecutionTime.Value);
 
             if (maxAvgExecutionTime.HasValue)
-                query = new List<Results>(query.Where(r => r.AvgExecutionTime <= maxAvgExecutionTime.Value));
+                query = query.Where(r => r.AvgExecutionTime <= maxAvgExecutionTime.Value);
 
-            return query;
+            return await query.ToListAsync();
         }
     }
 }

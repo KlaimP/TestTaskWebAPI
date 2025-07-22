@@ -11,9 +11,9 @@ namespace TestTaskWebAPI.ApiService.Controllers
     [Route("api/[controller]")]
     public class uploadValuesController : ControllerBase
     {
-        private readonly PostgresDBRepository _db;
+        private readonly IRepository _db;
 
-        public uploadValuesController(PostgresDBRepository db)
+        public uploadValuesController(IRepository db)
         {
             _db = db;
         }
@@ -71,11 +71,11 @@ namespace TestTaskWebAPI.ApiService.Controllers
                 }
             }
 
-            bool added = await Task.Run(() => _db.AddValues(records, file.FileName));
+            bool added = await _db.AddValues(records, file.FileName);
             if (!added)
                 return BadRequest("Couldn't add values");
 
-            bool calculated = await Task.Run(() => _db.CalculateResults(records, file.FileName));
+            bool calculated = await _db.CalculateResults(records, file.FileName);
             if (!calculated)
                 return BadRequest("Couldn't calculate the results");
 

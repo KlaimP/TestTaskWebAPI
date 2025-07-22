@@ -15,7 +15,7 @@ namespace DBApi.Web.Controllers // или другой namespace
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             try
             {
