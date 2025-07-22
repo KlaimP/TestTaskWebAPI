@@ -21,7 +21,7 @@ namespace TestTaskWebAPI.ApiService.Controllers
         [DisableRequestSizeLimit]
         [RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue)]
         [HttpPost]
-        public IActionResult UploadValues(IFormFile file)
+        public async Task<IActionResult> UploadValues(IFormFile file)
         {
             if (file is null || file.Length == 0)
             {
@@ -71,18 +71,15 @@ namespace TestTaskWebAPI.ApiService.Controllers
                 }
             }
 
-            if (_db.AddValues(records))
-            {
-                if (_db.CalculateResults(records, file.FileName))
-                {
-                    return Ok(new { count = records.Count, message = records });
-                }
-                else
-                {
-                    return BadRequest("Couldn't calculate the results");
-                }
-            }
-            return BadRequest("Couldn't add values");
+            bool added = await Task.Run(() => _db.AddValues(records, file.FileName));
+            if (!added)
+                return BadRequest("Couldn't add values");
+
+            bool calculated = await Task.Run(() => _db.CalculateResults(records, file.FileName));
+            if (!calculated)
+                return BadRequest("Couldn't calculate the results");
+
+            return Ok(new { count = records.Count, message = records });
         }
     }
 }

@@ -19,7 +19,7 @@ namespace TestTaskWebAPI.ApiService.Controllers
         public IActionResult Post([FromBody] Values value)
         {
             if (value == null)
-                return BadRequest("Пустой объект");
+                return BadRequest("Empty object");
 
             try
             {

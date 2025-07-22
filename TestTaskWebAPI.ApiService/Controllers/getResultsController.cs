@@ -1,5 +1,7 @@
 ﻿using DBApi.Repository;
+using DBApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.ObjectModel;
 
 namespace TestTaskWebAPI.ApiService.Controllers
 {
@@ -14,9 +16,27 @@ namespace TestTaskWebAPI.ApiService.Controllers
             _db = db;
         }
         [HttpGet]
-        public IActionResult FilterResults([FromQuery] string? fileName, [FromQuery]DateTime? minDate, [FromQuery]DateTime? maxDate, [FromQuery]double? minAvgValue, [FromQuery]double? maxAvgValue, [FromQuery] double? minAvgExecutionTime,[FromQuery] double? maxAvgExecutionTime)
+        public async Task<IActionResult> FilterResults(
+            [FromQuery] string? fileName, 
+            [FromQuery]DateTime? minDate, 
+            [FromQuery]DateTime? maxDate, 
+            [FromQuery]double? minAvgValue, 
+            [FromQuery]double? maxAvgValue, 
+            [FromQuery] double? minAvgExecutionTime,
+            [FromQuery] double? maxAvgExecutionTime)
         {
-            return View();
+            var result = await Task.Run(() =>
+                 _db.getResults(
+                     fileName,
+                     minDate,
+                     maxDate,
+                     minAvgValue,
+                     maxAvgValue,
+                     minAvgExecutionTime,
+                     maxAvgExecutionTime
+                 )
+             );
+            return Ok(result);
         }
     }
 }
